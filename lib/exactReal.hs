@@ -19,7 +19,7 @@ Possible improvements:
 -- import Data.Proxy
 
 
-module Main
+module ExactReal
 -- module IntervalArithmetic
   where
 import Data.Bits
@@ -409,10 +409,3 @@ halfFixed = fixedPoint testFunction
 
 one = cosR 0
 almostMinusOne = cosR 3
-
-main =
-  do
-    s <- getLine
-    n <- return (read s)
---    print (unR newHalf n)
-    print (unR fastNewHalf n)
