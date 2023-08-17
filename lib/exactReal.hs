@@ -2,7 +2,7 @@
 - fix the error message concerning the hidden module  Math.NumberTheory.Logarithms
 - to add the other analytic functions defined through Taylor series
 - to make the Taylor series generate convergent  sequences of intervals
-- complete the Duals definitions 
+- complete the Duals definitions
 
 Possible improvements:
 - extensively used the class mechanisms
@@ -22,20 +22,20 @@ Possible improvements:
 module ExactReal
 -- module IntervalArithmetic
   where
-import Data.Bits
-import Math.NumberTheory.Logarithms
+import           Data.Bits
+import           Math.NumberTheory.Logarithms
 -- import GHC.Integer.Logarithms.Compat
 
 -- integerLog2 n
 --   | n < 1       = error "Math.NumberTheory.Logarithms.integerLog2: argument must be positive"
 --   | otherwise   = I# (integerLog2# n)
-  
+
 --------------------------------------------
 -- Partial reals represented as
--- generalized dyadic intervals 
+-- generalized dyadic intervals
 ------------------------------------------
 
--- a data type for dyadic intervals 
+-- a data type for dyadic intervals
 data Interval = I !Integer !Integer !Int
   deriving (Eq)
 -- the expression (I lowBound gap exponent) represents the interval
@@ -55,7 +55,7 @@ maxValue = maxBound `div` 2
 -- an efficient implementation of the function \ a n -> a * 2^n
 multExp2 a n = shift a n
 
--- map a integer i to the corresponding interval [i,i] 
+-- map a integer i to the corresponding interval [i,i]
 toI i = I i 0 0
 
 -- the interval [-1,1]
@@ -71,7 +71,7 @@ addI (I l1 g1 e1) (I l2 g2 e2) | e2 < e1   = I (l1 `multExp2` (e1-e2) + l2)
                                                (g1 `multExp2` (e1-e2) + g2) e2
 addI (I l1 g1 e1) (I l2 g2 e2) | otherwise = I (l1 + l2 `multExp2` (e2-e1))
                                                (g1 + g2 `multExp2` (e2-e1)) e1
--- additive inverse on intervals                                             
+-- additive inverse on intervals
 negI (I l g e) = I (-l-g) g e
 
 -- multiplication on intevals
@@ -81,7 +81,7 @@ multI (I l1 g1 e1) (I l2 g2 e2) =
          maxI = 0 `max` lg1 `max` lg2 `max` gg
      in I (ll + minI) (maxI - minI) (e1+e2)
 
--- division of an interval by a natural number        
+-- division of an interval by a natural number
 divIN (I l g e) n =
   let ln = max 0 (maxGBits + integerLog2 n -
                   (if g == 0 then (- maxPrecision) else integerLog2 g))
@@ -89,21 +89,21 @@ divIN (I l g e) n =
          ((g `multExp2` ln) `div` n +2)
          (e - ln)
 
--- the maxPrecision used for rational, in future works, 
+-- the maxPrecision used for rational, in future works,
 -- it should be replace by a parameter depending on the level of computation
 maxPrecision = 100
 
 
 divI2 (I l g e) = I l g (e-1)
 
--- multiplicative inverse 
-invI (I l g e) = 
+-- multiplicative inverse
+invI (I l g e) =
   let den = (l+g)*l
       in if den > 0
          then divIN (I l g e) den
          else error "division by zero"
 
--- minimum 
+-- minimum
 minI (I l1 g1 e1) (I l2 g2 e2) =
   if e2 <= e1
   then let l1n = l1 `multExp2` (e1-e2)
@@ -119,7 +119,7 @@ minI (I l1 g1 e1) (I l2 g2 e2) =
 -- maximum
 maxI x y = negI (minI (negI x) (negI y))
 
--- convex union of two intervals 
+-- convex union of two intervals
 meetI (I l1 g1 e1) (I l2 g2 e2) | e2 <= e1 =
   let l1n = l1 `multExp2` (e1-e2)
       g1n = g1 `multExp2` (e1-e2)
@@ -129,7 +129,7 @@ meetI (I l1 g1 e1) (I l2 g2 e2) | e2 <= e1 =
                                 | otherwise =
   meetI (I l2 g2 e2) (I l1 g1 e1)
 
--- projection on the unit interval 
+-- projection on the unit interval
 projI (I l g e) =
   if e < 0
   then
@@ -155,15 +155,15 @@ roundI (I l g e) =
 maxGBits = 24
 
 ---------------------------------------------------
--- Partial Duals 
+-- Partial Duals
 ---------------------------------------------------
 
 -- a data type for partial duals,
--- defined as a pair of intervals 
+-- defined as a pair of intervals
 data DualInterval = !Interval :+& !Interval
   deriving (Eq, Show)
 
--- redefinition of function on dual intervals 
+-- redefinition of function on dual intervals
 toDI i = toI 1 :+& toI 0
 
 multExp2DI (xa :+& xi) n =  multExp2I xa n :+&  multExp2I xi n
@@ -202,7 +202,7 @@ maxDI (I m1 g1 e1 :+& xi) (I m2 g2 e2  :+& yi) =
                       mu = (m1n + g1n) `max` (m2 + g2)
                       in I ((mu + ml    ) `multExp2` (-1))
                             ((mu - ml + 1) `multExp2` (-1)) e2
-                         :+& meetI xi yi 
+                         :+& meetI xi yi
   else maxDI (I m2 g2 e2  :+& yi) (I m1 g1 e1 :+& xi)
 
 
@@ -271,19 +271,19 @@ instance Show Interval
 --    show (I l g e)  = '[' : show l ++ ", " ++ show g ++ ", " ++ show e ++ "]"
     show x = '[' : show lb ++ ", " ++ show (lb + gap) ++ "]"
       where
-      I l g e = roundI x 
+      I l g e = roundI x
       lb =  (fromIntegral l) * 2**(fromIntegral e)
       gap = (fromIntegral g) * 2**(fromIntegral e)
 
 instance Show CReal where
-  show (R x) = (show (x 0)) ++ (show (x 1)) ++ (show (x 4)) ++ (show (x 16))  ++ (show (x 64)) 
+  show (R x) = (show (x 0)) ++ (show (x 1)) ++ (show (x 4)) ++ (show (x 16))  ++ (show (x 64))
 
 
 ------------------------------
 -- Computable Duals
 ------------------------
 newtype CDual = D (Int -> DualInterval)
-unD (D x) = x 
+unD (D x) = x
 
 embedValueD i = D (\n -> i)
 embedUnaryD f r = D (\n -> f (unD r n))
@@ -298,7 +298,7 @@ negD  = embedUnaryD  negDI
 multD = embedBinaryD multDI
 invD  = embedUnaryD  invDI
 maxD  = embedBinaryD maxDI
-divDN r d n = divDIN (r n) d 
+divDN r d n = divDIN (r n) d
 divD2 = embedUnaryD  divDI2
 
 -------------------------------------------------
@@ -316,11 +316,11 @@ supremumR f = R (\n -> supremumAux f (n, n))
     supremumAux f (m, n) = supremumAux (\x -> f (divR2 x)) (m-1, n) `maxI` supremumAux (\x -> f (divR2 (x + 1))) (m-1, n)
 
 fastIntegrationR f = R(\n -> addList (map (\i -> unR (f (R (\m -> i))) n) (splitUnitInterval n)) `multExp2I` (-n-2))
-  where 
+  where
     splitUnitInterval n = [ I i 1 (-n) | i <- [0..2^n-1]]
     addList xs = addListAux xs 0
       where
-        addListAux [] acc = acc
+        addListAux [] acc     = acc
         addListAux (x:xs) acc = seq (x + acc) (addListAux xs (x + acc))
 
 -- integrationD f n = integrationAux f (n, n)
@@ -332,22 +332,22 @@ fastIntegrationR f = R(\n -> addList (map (\i -> unR (f (R (\m -> i))) n) (split
 -- newHalfD = integrationD id
 -- test = integrationD (\x -> maxD x (addD oneD (negD x)))
 
-class FixedPoint a where 
+class FixedPoint a where
   down       :: a -> a
   fixedPoint :: (a -> a) -> a
   fixedPoint f = f (down (fixedPoint f))
 
-instance FixedPoint CReal where 
+instance FixedPoint CReal where
   down (R x) = R( downf x)
     where
       downf x 0 = bottomInterval
       downf x n = x (n-1)
 
-instance (FixedPoint a) => FixedPoint (a -> b) where 
+instance (FixedPoint a) => FixedPoint (a -> b) where
    down f x = f (down x)
 
 -----------------
--- Taylor series 
+-- Taylor series
 ----------------
 
 powerSeries x = powerSeriesAux x 1
@@ -357,7 +357,7 @@ factorialSeries = factorialSeriesAux 0 1
   where factorialSeriesAux n nf = nf : factorialSeriesAux (n+1) (nf * (n+1))
 
 seriesFromFunction f = map f [0..]
-                                      
+
 taylorSeries f x = zipWith divIN (zipWith (*) (seriesFromFunction f) (powerSeries x)) factorialSeries
 
 addSeries (x:xs) = addSeriesAux x xs where
@@ -375,22 +375,22 @@ fact n = product [1 .. n]
 
 power 0 x = 1
 power n x = power (n-1) x
-                   
-taylorI f x = taylorIAux f x 1 0 where   
+
+taylorI f x = taylorIAux f x 1 0 where
   taylorIAux f x xn n = (f n * xn) `divIN` fact n :
     taylorIAux f x (x * xn) (n+1)
--- build the Taylor series f(0), ...,  f(n)/n! x^n 
+-- build the Taylor series f(0), ...,  f(n)/n! x^n
 
 functionFromFGG f g (R r) =  R (\n -> (addSeries (taylorI f (r n))) !! n)
 --  +  (g (meetI 0 (r n)) * power n (r n)) `divIN` (fact n))
 
 --------------------------
--- Some analytic functions 
+-- Some analytic functions
 --------------------------
 
 fCos n = case  n `rem` 4 of
-           0 -> 1 
-           2 -> -1 
+           0 -> 1
+           2 -> -1
            _ -> 0
 
 hCos _ x = x - x

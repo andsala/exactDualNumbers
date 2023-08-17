@@ -1,8 +1,8 @@
 module Main where
 
-import Test.Tasty
-import Test.Tasty.HUnit
-import qualified ExactRealTests (tests)
+import qualified ExactRealTests   (tests)
+import           Test.Tasty
+import           Test.Tasty.HUnit
 
 
 tests :: TestTree
